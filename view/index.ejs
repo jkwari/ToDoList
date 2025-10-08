@@ -1,0 +1,49 @@
+<%- include('./includes/head.ejs')%>
+</head>
+<%- include('./includes/nav.ejs')%> 
+
+  <% if(tasks.length>0){%>
+<table class="table">
+  <thead>
+    <tr>
+      <!-- <th scope="col">#</th> -->
+      <th scope="col">Title</th>
+      <th scope="col">Description</th>
+      <th scope="col">Start Date</th>
+      <th scope="col">End Date</th>
+      <th scope="col">Update</th>
+      <th scope="col">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+      
+            <%for(let task of tasks) {%>
+                <tr>
+                <!-- <td><%= task._id%></td> -->
+                <td><%= task.title%></td>
+                <td><%= task.description%></td>
+                <td><%= task.sDate%></td>
+                <td><%= task.eDate%></td>
+                <td>
+                    <form action="/updateTask" method="post">
+                        <input type="hidden" value="<%= task._id%>">
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+                <td>
+                    <form action="/deleteTask" method="post">
+                        <input type="hidden" value="<%= task._id%>">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+                </tr>
+            <%}%>
+       
+  </tbody>
+</table>
+ <%}else{%>
+    <h1>Nothing to do Today lets game !!!</h1>
+    <%}%>
+</body>
+<%- include('./includes/end.ejs')%> 
+</html>
