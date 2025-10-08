@@ -1,0 +1,24 @@
+<%- include('./includes/head.ejs')%>
+</head>
+<%- include('./includes/nav.ejs')%> 
+
+<form action="/editTask" method="post">
+    <div class="mb-3">
+    <label for="exampleInputEmail1" class="form-label">Task Title</label>
+    <input type="text" class="form-control" id="title" name="title" value="<%= task.title%>" required>
+  </div>
+  <div class="mb-3">
+    <label for="exampleFormControlTextarea1" class="form-label">Task Description</label>
+    <textarea class="form-control" id="tDes" name="tDes" rows="3" ><%= task.description%></textarea>
+  </div>
+  <div class="mb-3 form-check">
+    <label class="form-check-label" for="exampleCheck1">Start Date</label>
+    <input type="date" name="sDate" id="sDate" value="<%= task.sDate%>">
+    <label class="form-check-label" for="exampleCheck1">End Date</label>
+    <input type="date" name="eDate" id="eDate" value="<%= task.eDate%>">
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</body>
+<%- include('./includes/end.ejs')%> 
+</html>

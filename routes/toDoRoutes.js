@@ -12,4 +12,10 @@ router.post("/addTask", controller.postAddTask);
 
 router.get("/", controller.getAllData);
 
+router.post("/deleteTask", controller.deleteTask);
+
+router.post("/updateTask", controller.getUpdateData);
+
+router.post("/editTask", controller.updateTask);
+
 module.exports = router;
