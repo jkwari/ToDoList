@@ -1,4 +1,57 @@
+const { Schema } = require("mongoose");
+const User = require("../model/user");
+const bcrypt = require("bcryptjs");
 const ToDoList = require("../model/toDoList");
+
+// Signup Logic
+
+exports.getSignupPage = (req, res, next) => {
+  res.render("signup", {
+    title: "SignUp Page",
+  });
+};
+
+exports.postSignup = (req, res, next) => {
+  // TODO: Add Logic for Signup
+  // Let's store the data coming from the form
+  const fName = req.body.fName;
+  const lName = req.body.lName;
+  const phone = req.body.phone;
+  const email = req.body.email;
+  const password = req.body.password;
+  // after we get the data from the post form we want to store it in the DB with hased Password
+  bcrypt
+    .hash(password, 12)
+    .then((hashedPass) => {
+      const newUser = new User({
+        firstName: fName,
+        lastName: lName,
+        phone: phone,
+        email: email,
+        password: hashedPass,
+      });
+      return newUser.save();
+    })
+    .then(() => {
+      console.log("User Stored In the Database");
+      res.redirect("/login");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+// Login Logic
+
+exports.getLoginPage = (req, res, next) => {
+  res.render("login", {
+    title: "Login Page",
+  });
+};
+
+exports.postLogin = (req, res, next) => {
+  // TODO: Add login logic...
+};
 
 exports.getCanvas = (req, res, next) => {
   res.render("index", {

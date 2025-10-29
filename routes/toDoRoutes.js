@@ -18,4 +18,12 @@ router.post("/updateTask", controller.getUpdateData);
 
 router.post("/editTask", controller.updateTask);
 
+router.post("/signup", controller.postSignup);
+
+router.get("/signup", controller.getSignupPage);
+
+router.post("/login", controller.postLogin);
+
+router.get("/login", controller.getLoginPage);
+
 module.exports = router;
