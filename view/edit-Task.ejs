@@ -17,7 +17,8 @@
     <label class="form-check-label" for="exampleCheck1">End Date</label>
     <input type="date" name="eDate" id="eDate" value="<%= task.eDate%>">
   </div>
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <input type="hidden" name="id" value="<%= task._id%>" >
+  <button type="submit" class="btn btn-primary">Update Task</button>
 </form>
 </body>
 <%- include('./includes/end.ejs')%> 

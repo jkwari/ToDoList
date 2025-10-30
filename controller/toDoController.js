@@ -70,7 +70,12 @@ exports.postAddTask = (req, res, next) => {
   const description = req.body.tDes;
   const startDate = req.body.sDate;
   const endDate = req.body.eDate;
-  const newTask = new ToDoList(title, description, startDate, endDate, null);
+  const newTask = new ToDoList({
+    title: title,
+    description: description,
+    sDate: startDate,
+    eDate: endDate,
+  });
 
   newTask
     .save()
@@ -83,7 +88,7 @@ exports.postAddTask = (req, res, next) => {
 };
 
 exports.getAllData = (req, res, next) => {
-  return ToDoList.fetchAllData()
+  return ToDoList.find()
     .then((tasks) => {
       res.render("index", {
         title: "Canvas",
@@ -97,7 +102,7 @@ exports.getAllData = (req, res, next) => {
 
 exports.deleteTask = (req, res, next) => {
   const tid = req.body.id;
-  return ToDoList.deleteByID(tid)
+  return ToDoList.findByIdAndDelete(tid)
     .then((result) => {
       res.redirect("/");
     })
@@ -108,10 +113,12 @@ exports.deleteTask = (req, res, next) => {
 
 exports.getUpdateData = (req, res, next) => {
   const id = req.body.id;
-  return ToDoList.getTaskById(id).then((updatedTask) => {
+  return ToDoList.find({ _id: id }).then((updatedTask) => {
+    // console.log(updatedTask);
+
     res.render("edit-Task", {
       title: "Update Task",
-      task: updatedTask,
+      task: updatedTask[0],
     });
   });
 };
@@ -122,20 +129,35 @@ exports.updateTask = (req, res, next) => {
   const updatedDesc = req.body.tDes;
   const updatedStartDate = req.body.sDate;
   const updatedEndDate = req.body.eDate;
-  const updateTask = new ToDoList(
-    updatedTitle,
-    updatedDesc,
-    updatedStartDate,
-    updatedEndDate,
-    tid
-  );
-  updateTask
-    .save()
-    .then((result) => {
+  console.log(updatedTitle);
+
+  return ToDoList.findByIdAndUpdate(
+    { _id: tid },
+    {
+      $set: {
+        title: updatedTitle,
+        description: updatedDesc,
+        sDate: updatedStartDate,
+        eDate: updatedEndDate,
+      },
+    },
+    { new: true }
+  ).then((result) => {
+    if (result) {
+      console.log("Updated Successfully !!!");
       res.redirect("/");
-      return result;
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+    } else {
+      console.log("Something went wrong");
+    }
+  });
+
+  // updateTask
+  //   .save()
+  //   .then((result) => {
+  //     res.redirect("/");
+  //     return result;
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
 };
