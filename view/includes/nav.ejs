@@ -1,7 +1,16 @@
 <body>
 <nav class="nav">
-  <a class="nav-link active" aria-current="page" href="/">Canvas</a>
+  <% if(isAuthenticated) {%>
+  <a class="nav-link active" aria-current="page" href="/canvas">Canvas</a>
   <a class="nav-link" href="/addTask">Add Task</a>
+  <%}%>
+  <% if (!isAuthenticated){ %>
   <a class="nav-link" href="/signup">Signup</a>
   <a class="nav-link" href="/login">Login</a>
+  <%}else{%>
+    <form action="/logout" method="post">
+      <input type="submit" value="Logout" class="nav-link">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    </form>
+  <%}%>
 </nav>

@@ -3,11 +3,18 @@ const User = require("../model/user");
 const bcrypt = require("bcryptjs");
 const ToDoList = require("../model/toDoList");
 
+exports.homePage = (req, res, next) => {
+  res.render("index", {
+    title: "HomePage",
+  });
+};
+
 // Signup Logic
 
 exports.getSignupPage = (req, res, next) => {
   res.render("signup", {
     title: "SignUp Page",
+    errorMessage: req.flash("error"),
   });
 };
 
@@ -20,25 +27,34 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   // after we get the data from the post form we want to store it in the DB with hased Password
-  bcrypt
-    .hash(password, 12)
-    .then((hashedPass) => {
-      const newUser = new User({
-        firstName: fName,
-        lastName: lName,
-        phone: phone,
-        email: email,
-        password: hashedPass,
-      });
-      return newUser.save();
-    })
-    .then(() => {
-      console.log("User Stored In the Database");
-      res.redirect("/login");
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  // We need to check if the email is in the database if it is then send a message to user
+  // that the email exists otherwise let the user register
+  User.findOne({ email: email }).then((exist) => {
+    if (exist) {
+      req.flash("error", "Email Exists please use a different one!");
+      res.redirect("/signup");
+    } else {
+      bcrypt
+        .hash(password, 12)
+        .then((hashedPass) => {
+          const newUser = new User({
+            firstName: fName,
+            lastName: lName,
+            phone: phone,
+            email: email,
+            password: hashedPass,
+          });
+          return newUser.save();
+        })
+        .then(() => {
+          console.log("User Stored In the Database");
+          res.redirect("/login");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  });
 };
 
 // Login Logic
@@ -46,15 +62,66 @@ exports.postSignup = (req, res, next) => {
 exports.getLoginPage = (req, res, next) => {
   res.render("login", {
     title: "Login Page",
+    errorMessage: req.flash("error"),
   });
 };
 
 exports.postLogin = (req, res, next) => {
   // TODO: Add login logic...
+
+  // Lets get the data from user:
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // Now we need to authenticate the user and make sure only registered users can
+  // add task
+  User.findOne({ email: email })
+    // Here in this code we made sure that the user registered email can login but now we need
+    // to check the password but the password it is stored in the database in a hashed version
+
+    .then((user) => {
+      if (user) {
+        // console.log(user);
+
+        return bcrypt
+          .compare(password, user.password)
+          .then((match) => {
+            // If the password and email match then establish a session
+            if (match) {
+              req.session.isLoggedIn = true;
+              req.session.user = user;
+              // if we have any problems in saving to MongoDB the session then error will be
+              // triggered
+              return req.session.save((error) => {
+                if (error) {
+                  console.log(error);
+                }
+                // if no error we will continue to canvas page
+                console.log("Welcome: " + user.firstName + " " + user.lastName);
+                res.redirect("/canvas");
+              });
+            } else {
+              // Problem with password then redirect to login page
+              req.flash("error", "Invalid Email or Password");
+              return res.redirect("/login");
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else {
+        // If the email is not found in the database then redirect to login page
+        req.flash("error", "Invalid Email or Password");
+        return res.redirect("/login");
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 exports.getCanvas = (req, res, next) => {
-  res.render("index", {
+  res.render("canvas", {
     title: "Canvas",
   });
 };
@@ -80,7 +147,7 @@ exports.postAddTask = (req, res, next) => {
   newTask
     .save()
     .then(() => {
-      res.redirect("/");
+      res.redirect("/canvas");
     })
     .catch((error) => {
       console.log(error);
@@ -90,7 +157,7 @@ exports.postAddTask = (req, res, next) => {
 exports.getAllData = (req, res, next) => {
   return ToDoList.find()
     .then((tasks) => {
-      res.render("index", {
+      res.render("canvas", {
         title: "Canvas",
         tasks: tasks,
       });
@@ -104,7 +171,7 @@ exports.deleteTask = (req, res, next) => {
   const tid = req.body.id;
   return ToDoList.findByIdAndDelete(tid)
     .then((result) => {
-      res.redirect("/");
+      res.redirect("/canvas");
     })
     .catch((error) => {
       console.log(error);
@@ -145,19 +212,20 @@ exports.updateTask = (req, res, next) => {
   ).then((result) => {
     if (result) {
       console.log("Updated Successfully !!!");
-      res.redirect("/");
+      res.redirect("/canvas");
     } else {
       console.log("Something went wrong");
     }
   });
+};
 
-  // updateTask
-  //   .save()
-  //   .then((result) => {
-  //     res.redirect("/");
-  //     return result;
-  //   })
-  //   .catch((error) => {
-  //     console.log(error);
-  //   });
+exports.logoutButton = (req, res, next) => {
+  // we need to destroy the session once the logout button is clicked
+  req.session.destroy((error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.redirect("/");
+    }
+  });
 };

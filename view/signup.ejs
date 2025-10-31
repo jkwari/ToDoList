@@ -28,7 +28,12 @@
         <input type="password" class="form-control" name="password" id="password" placeholder="Please Provide your password" required>
         </div>
         <br><br>
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
         <button type="submit" class="btn btn-primary btn-lg">Signup</button>
+          <%if (errorMessage){%>
+        <h4> <%= errorMessage %> </h4>
+    <%}%>
     </form>
 </main>
 
