@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const toDoSchema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-const newTask = new toDoSchema({
+const newTask = new Schema({
   title: {
     type: String,
     required: true,
@@ -17,6 +17,11 @@ const newTask = new toDoSchema({
   },
   eDate: {
     type: String,
+    required: true,
+  },
+  userID: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
 });

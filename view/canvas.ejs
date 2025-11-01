@@ -27,12 +27,14 @@
                 <td>
                     <form action="/updateTask" method="post">
                         <input type="hidden" value="<%= task._id%>" name="id">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button type="submit">Update</button>
                     </form>
                 </td>
                 <td>
                     <form action="/deleteTask" method="post">
                         <input type="hidden" value="<%= task._id%>" name="id">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
                         <button type="submit">Delete</button>
                     </form>
                 </td>

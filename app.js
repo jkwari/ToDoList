@@ -48,6 +48,9 @@ app.use((req, res, next) => {
   User.findById(req.session.user._id)
     .then((user) => {
       req.user = user;
+      // console.log(new mongoDb.ObjectId(req.user._id));
+      // console.log(req.session.user._id);
+
       next();
     })
     .catch((error) => {

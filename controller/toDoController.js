@@ -43,6 +43,7 @@ exports.postSignup = (req, res, next) => {
             phone: phone,
             email: email,
             password: hashedPass,
+            list: [],
           });
           return newUser.save();
         })
@@ -142,6 +143,7 @@ exports.postAddTask = (req, res, next) => {
     description: description,
     sDate: startDate,
     eDate: endDate,
+    userID: req.user._id,
   });
 
   newTask
@@ -155,7 +157,8 @@ exports.postAddTask = (req, res, next) => {
 };
 
 exports.getAllData = (req, res, next) => {
-  return ToDoList.find()
+  const userID = req.user._id;
+  return ToDoList.find({ userID: userID })
     .then((tasks) => {
       res.render("canvas", {
         title: "Canvas",
